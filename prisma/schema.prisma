@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  user_id       String          @id
+  username      String          @unique
+  email         String          @unique
+  password      String
+  role          String
+  access_token  String?
+  created_at    DateTime        @default(now())
+  Detections    Detections[]
+  Subscriptions Subscriptions[]
+}
+
+model Detections {
+  detection_id String   @id
+  user         Users    @relation(fields: [user_id], references: [user_id])
+  user_id      String
+  text_input   String
+  result       String
+  image_input  String
+  created_at   DateTime @default(now())
+}
+
+model Subscriptions {
+  subscription_id String   @id
+  user            Users    @relation(fields: [user_id], references: [user_id])
+  user_id         String
+  type            String
+  start_date      DateTime
+  end_date        DateTime
+  status          String
+  created_at      DateTime @default(now())
+}
