@@ -1,5 +1,5 @@
 import { Router } from "express";
-import ContohController from "../controllers/ContohController";
+import ContohController from "../controllers/ContohController.js";
 
 class ContohRoutes {
     constructor() {

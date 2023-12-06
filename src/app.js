@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import ContohRoutes from './routes/ContohRoutes';
+import ContohRoutes from './routes/ContohRoutes.js';
 
 const app = express();
 const port = 3000;
