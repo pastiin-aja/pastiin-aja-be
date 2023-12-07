@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 class FraudController{
     getAllFraud = async (req,res) => {
         try {
-            const allFraud = await prisma.detections.findMany({
+            const allFraud = await prisma.frauds.findMany({
                 select: {
                     detection_id: true,
                     user_id: true,

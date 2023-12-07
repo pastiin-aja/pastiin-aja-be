@@ -1,11 +1,11 @@
 import { Router } from "express";
 import FraudController from "../controllers/FraudController.js";
 
-class ContohRoutes {
+class FraudRoutes {
     constructor() {
         this.router = Router();
         this.router.get("/", FraudController.getAllFraud);
     }
 }
 
-export default new ContohRoutes().router;
+export default new FraudRoutes().router;

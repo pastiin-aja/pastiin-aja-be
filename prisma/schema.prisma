@@ -12,17 +12,18 @@ datasource db {
 
 model Users {
   user_id       String          @id
+  name          String
   username      String          @unique
   email         String          @unique
   password      String
   role          String
   access_token  String?
   created_at    DateTime        @default(now())
-  Detections    Detections[]
+  Detections    Frauds[]
   Subscriptions Subscriptions[]
 }
 
-model Detections {
+model Frauds {
   detection_id String   @id
   user         Users    @relation(fields: [user_id], references: [user_id])
   user_id      String
