@@ -30,6 +30,7 @@ model Frauds {
   text_input   String
   result       String
   image_input  String
+  is_shared    Boolean
   created_at   DateTime @default(now())
 }
 
