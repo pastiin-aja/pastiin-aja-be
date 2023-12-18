@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client"
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 class FraudController{
     getAllFraud = async (req,res) => {
@@ -28,6 +28,80 @@ class FraudController{
             })
         }
     }
+
+    postFraudPhoto = async (req,res) => {
+        try {
+            const { user_id, text_input, result, image_input, is_shared } = req.body;
+            const fraud = await prisma.frauds.create({
+                data: {
+                    user_id: user_id,
+                    text_input: text_input,
+                    result: result,
+                    image_input: image_input,
+                    is_shared: is_shared,
+                }
+            })
+            res.json({
+                isError: false,
+                message: "Post fraud image success",
+                data: fraud,
+            })
+        } catch (error) {
+            res.status(500).json({
+                isError: true,
+                message: error.message,
+                data: null,
+            })
+        }
+    }
+
+    postFraudText = async (req,res) => {
+        try {
+            const { user_id, text_input, result, image_input, is_shared } = req.body;
+            const fraud = await prisma.frauds.create({
+                data: {
+                    user_id: user_id,
+                    text_input: text_input,
+                    result: result,
+                    image_input: image_input,
+                    is_shared: is_shared,
+                }
+            })
+            res.json({
+                isError: false,
+                message: "Post fraud text success",
+                data: fraud,
+            })
+        } catch (error) {
+            res.status(500).json({
+                isError: true,
+                message: error.message,
+                data: null,
+            })
+        }
+    }
+
+    getFraudById = async (req,res) => {
+        try {
+            const { id } = req.params;
+            const fraud = await prisma.frauds.findUnique({
+                where: {
+                    detection_id: id,
+                }
+            })
+            res.json({
+                isError: false,
+                message: "Get fraud by id success",
+                data: fraud,
+            })
+        } catch (error) {
+            res.status(500).json({
+                isError: true,
+                message: error.message,
+                data: null,
+            })
+        }
+    }
 }
 
-export default new FraudController();
+export default new FraudController()
