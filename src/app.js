@@ -1,7 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import ContohRoutes from './routes/ContohRoutes.js'
 import FraudRoutes from './routes/FraudRoutes.js'
 import UserRoutes from './routes/UserRoutes.js'
 import AuthRoutes from './routes/AuthRoutes.js'
@@ -13,8 +12,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors());
 
-app.use('/contoh', ContohRoutes)
-app.use('/fraud', FraudRoutes)
+app.use('/', FraudRoutes)
 app.use('/user', UserRoutes)
 app.use('/', AuthRoutes)
 

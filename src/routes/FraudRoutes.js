@@ -5,9 +5,10 @@ class FraudRoutes {
     constructor() {
         this.router = Router();
         this.router.get("/all-fraud", FraudController.getAllFraud);
-        this.router.post("/post-photo", FraudController.postFraudPhoto)
-        this.router.post("/post-text", FraudController.postFraudText)
-        this.router.get("/:id", FraudController.getFraudById)
+        this.router.post("/fraud-by-photo", FraudController.postFraudPhoto)
+        this.router.post("/fraud-by-text", FraudController.postFraudText)
+        this.router.get("/fraud-by-fraud-id/:id", FraudController.getFraudByFraudId)
+        this.router.get("/fraud-by-user-id/:id", FraudController.getFraudByUserId)
     }
 }
 

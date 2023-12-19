@@ -34,7 +34,7 @@ class FraudController{
 
     postFraudPhoto = async (req,res) => {
         try {
-            const { user_id, text_input, result, image_input, is_shared } = req.body;
+            const { user_id, image_input, is_shared } = req.body;
 
             const current_date = new Date().valueOf().toString();
             const detection_id = crypto
@@ -42,7 +42,7 @@ class FraudController{
                 .update(current_date + user_id)
                 .digest("hex");
 
-            const mlResponse = await axios.post("https://fraud-detection-sbqgmrwlba-an.a.run.app/image_predict", {
+            const mlResponse = await axios.post(process.env.FRAUD_DETECTION_URL + "/image_predict", {
                 url: image_input,
             })
 
@@ -74,7 +74,7 @@ class FraudController{
 
     postFraudText = async (req,res) => {
         try {
-            const { user_id, text_input, result, image_input, is_shared } = req.body;
+            const { user_id, text_input, is_shared } = req.body;
             
             const current_date = new Date().valueOf().toString();
             const detection_id = crypto
@@ -82,7 +82,7 @@ class FraudController{
                 .update(current_date + user_id)
                 .digest("hex");
 
-            const mlResponse = await axios.post("https://fraud-detection-sbqgmrwlba-an.a.run.app/text_predict", {
+            const mlResponse = await axios.post(process.env.FRAUD_DETECTION_URL + "/text_predict", {
                 text: text_input,
             })
 
@@ -92,7 +92,6 @@ class FraudController{
                     detection_id: detection_id,
                     text_input: text_input,
                     result: mlResponse.data.msg[0][0],
-                    image_input: image_input,
                     is_shared: is_shared,
                 }
             })
@@ -110,7 +109,7 @@ class FraudController{
         }
     }
 
-    getFraudById = async (req,res) => {
+    getFraudByFraudId = async (req,res) => {
         try {
             const { id } = req.params;
             const fraud = await prisma.frauds.findUnique({
@@ -121,6 +120,27 @@ class FraudController{
             res.json({
                 isError: false,
                 message: "Get fraud by id success",
+                data: fraud,
+            })
+        } catch (error) {
+            res.status(500).json({
+                isError: true,
+                message: error.message,
+                data: null,
+            })
+        }
+    }
+    getFraudByUserId = async (req,res) => {
+        try {
+            const { id } = req.params;
+            const fraud = await prisma.frauds.findMany({
+                where: {
+                    user_id: id,
+                }
+            })
+            res.json({
+                isError: false,
+                message: "Get fraud by user id success",
                 data: fraud,
             })
         } catch (error) {
