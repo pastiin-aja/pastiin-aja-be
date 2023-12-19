@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import crypto from "crypto"
+import axios from "axios"
 
 const prisma = new PrismaClient()
 
@@ -41,12 +42,18 @@ class FraudController{
                 .update(current_date + user_id)
                 .digest("hex");
 
+            const mlResponse = await axios.post("https://fraud-detection-sbqgmrwlba-an.a.run.app/image_predict", {
+                url: image_input,
+            })
+
+            console.log(mlResponse.data.prediction)
+
             const fraud = await prisma.frauds.create({
                 data: {
                     user_id: user_id,
                     detection_id: detection_id,
-                    text_input: text_input,
-                    result: result,
+                    text_input: mlResponse.data.text,
+                    result: mlResponse.data.prediction,
                     image_input: image_input,
                     is_shared: is_shared,
                 }
@@ -75,12 +82,16 @@ class FraudController{
                 .update(current_date + user_id)
                 .digest("hex");
 
+            const mlResponse = await axios.post("https://fraud-detection-sbqgmrwlba-an.a.run.app/text_predict", {
+                text: text_input,
+            })
+
             const fraud = await prisma.frauds.create({
                 data: {
                     user_id: user_id,
                     detection_id: detection_id,
                     text_input: text_input,
-                    result: result,
+                    result: mlResponse.data.msg[0][0],
                     image_input: image_input,
                     is_shared: is_shared,
                 }

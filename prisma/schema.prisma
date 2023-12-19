@@ -28,7 +28,7 @@ model Frauds {
   user         Users    @relation(fields: [user_id], references: [user_id])
   user_id      String
   text_input   String
-  result       String
+  result       Float
   image_input  String
   is_shared    Boolean
   created_at   DateTime @default(now())
