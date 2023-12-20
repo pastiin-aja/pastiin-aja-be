@@ -13,7 +13,7 @@ class FraudController{
                     user_id: true,
                     text_input: true,
                     result: true,
-                    image_input: true,
+                    image_link: true,
                     is_shared: true,
                     created_at: true,
                 }
@@ -34,7 +34,7 @@ class FraudController{
 
     postFraudPhoto = async (req,res) => {
         try {
-            const { user_id, image_input, is_shared } = req.body;
+            const { user_id, image_link, is_shared } = req.body;
 
             const current_date = new Date().valueOf().toString();
             const fraud_id = crypto
@@ -43,7 +43,7 @@ class FraudController{
                 .digest("hex");
 
             const mlResponse = await axios.post(process.env.FRAUD_DETECTION_URL + "/image_predict", {
-                url: image_input,
+                url: image_link,
             })
 
             console.log(mlResponse.data.prediction)
@@ -54,7 +54,7 @@ class FraudController{
                     fraud_id: fraud_id,
                     text_input: mlResponse.data.text,
                     result: mlResponse.data.prediction,
-                    image_input: image_input,
+                    image_link: image_link,
                     is_shared: is_shared,
                 }
             })

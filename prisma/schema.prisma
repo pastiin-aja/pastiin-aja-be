@@ -29,7 +29,7 @@ model Frauds {
   user_id      String
   text_input   String?
   result       Float
-  image_input  String?
+  image_link  String?
   is_shared    Boolean
   created_at   DateTime @default(now())
 }
