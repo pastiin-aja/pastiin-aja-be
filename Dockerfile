@@ -19,9 +19,6 @@ RUN npm install
 # Copy local code to the container image.
 COPY . .
 
-# Transpile TypeScript to JavaScript.
-RUN npm run build
-
 # Set the environment to production
 ENV NODE_ENV production
 
@@ -32,4 +29,4 @@ EXPOSE 3001
 RUN npx prisma generate
 
 # Run the web service on container startup.
-CMD [ "node", "dist/server.js" ]
+CMD [ "npm", "start" ]
