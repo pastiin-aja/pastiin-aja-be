@@ -19,7 +19,7 @@ model Users {
   role          String
   access_token  String?
   created_at    DateTime        @default(now())
-  Detections    Frauds[]
+  Frauds        Frauds[]
   Subscriptions Subscriptions[]
 }
 
