@@ -16,7 +16,11 @@ class FraudController{
                     image_link: true,
                     is_shared: true,
                     created_at: true,
-                }
+                },
+                orderBy: {
+                    created_at: 'desc',
+                },
+                take: 50,
             })
             res.json({
                 isError: false,
@@ -31,7 +35,41 @@ class FraudController{
             })
         }
     }
-
+    getAllSharedFraud = async (req,res) => {
+        try {
+            const allFraud = await prisma.frauds.findMany({
+                where: {
+                    is_shared: true,
+                },
+                select: {
+                    fraud_id: true,
+                    user_id: true,
+                    text_input: true,
+                    result: true,
+                    image_link: true,
+                    is_shared: true,
+                    created_at: true,
+                },
+                orderBy: {
+                    created_at: 'desc',
+                },
+                take: 50,
+            })
+            res.json({
+                isError: false,
+                message: "Get all shared fraud success",
+                data: allFraud,
+            })
+        }
+        catch (error) {
+            res.status(500).json({
+                isError: true,
+                message: error.message,
+                data: null,
+            })
+        }
+    }
+    
     postFraudPhoto = async (req,res) => {
         try {
             const { user_id, image_link, is_shared } = req.body;
@@ -141,6 +179,30 @@ class FraudController{
             res.json({
                 isError: false,
                 message: "Get fraud by user id success",
+                data: fraud,
+            })
+        } catch (error) {
+            res.status(500).json({
+                isError: true,
+                message: error.message,
+                data: null,
+            })
+        }
+    }
+    updateIsShared = async (req,res) => {
+        try {
+            const { fraud_id, is_shared } = req.body;
+            const fraud = await prisma.frauds.update({
+                where: {
+                    fraud_id: fraud_id,
+                },
+                data: {
+                    is_shared: is_shared,
+                }
+            })
+            res.json({
+                isError: false,
+                message: "Update is_shared success",
                 data: fraud,
             })
         } catch (error) {
