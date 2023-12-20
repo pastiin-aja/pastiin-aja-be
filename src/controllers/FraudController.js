@@ -9,7 +9,7 @@ class FraudController{
         try {
             const allFraud = await prisma.frauds.findMany({
                 select: {
-                    detection_id: true,
+                    fraud_id: true,
                     user_id: true,
                     text_input: true,
                     result: true,
@@ -37,7 +37,7 @@ class FraudController{
             const { user_id, image_input, is_shared } = req.body;
 
             const current_date = new Date().valueOf().toString();
-            const detection_id = crypto
+            const fraud_id = crypto
                 .createHash("sha3-256")
                 .update(current_date + user_id)
                 .digest("hex");
@@ -51,7 +51,7 @@ class FraudController{
             const fraud = await prisma.frauds.create({
                 data: {
                     user_id: user_id,
-                    detection_id: detection_id,
+                    fraud_id: fraud_id,
                     text_input: mlResponse.data.text,
                     result: mlResponse.data.prediction,
                     image_input: image_input,
@@ -77,7 +77,7 @@ class FraudController{
             const { user_id, text_input, is_shared } = req.body;
             
             const current_date = new Date().valueOf().toString();
-            const detection_id = crypto
+            const fraud_id = crypto
                 .createHash("sha3-256")
                 .update(current_date + user_id)
                 .digest("hex");
@@ -89,7 +89,7 @@ class FraudController{
             const fraud = await prisma.frauds.create({
                 data: {
                     user_id: user_id,
-                    detection_id: detection_id,
+                    fraud_id: fraud_id,
                     text_input: text_input,
                     result: mlResponse.data.msg[0][0],
                     is_shared: is_shared,
@@ -114,7 +114,7 @@ class FraudController{
             const { id } = req.params;
             const fraud = await prisma.frauds.findUnique({
                 where: {
-                    detection_id: id,
+                    fraud_id: id,
                 }
             })
             res.json({

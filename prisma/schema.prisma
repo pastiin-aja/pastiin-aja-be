@@ -24,7 +24,7 @@ model Users {
 }
 
 model Frauds {
-  detection_id String   @id
+  fraud_id String   @id
   user         Users    @relation(fields: [user_id], references: [user_id])
   user_id      String
   text_input   String?
