@@ -5,6 +5,29 @@ import axios from "axios"
 const prisma = new PrismaClient()
 
 class FraudController{
+
+    base64ToBlob = (base64, contentType) => {
+        contentType = contentType || '';
+        const sliceSize = 1024;
+        const byteCharacters = atob(base64);
+        const byteArrays = [];
+
+        for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+            const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+            const byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            const byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+
+        const blob = new Blob(byteArrays, {type: contentType});
+        return blob;
+    }
+
     getAllFraud = async (req,res) => {
         try {
             const allFraud = await prisma.frauds.findMany({
@@ -72,13 +95,17 @@ class FraudController{
     
     postFraudPhoto = async (req,res) => {
         try {
-            const { user_id, image_link, is_shared } = req.body;
+            const { user_id, image_base64, is_shared } = req.body;
 
             const current_date = new Date().valueOf().toString();
             const fraud_id = crypto
                 .createHash("sha3-256")
                 .update(current_date + user_id)
                 .digest("hex");
+            const blob = this.base64ToBlob(image_base64, "image/png")
+
+            // taro sini proses upload ke cloud nya.
+            // ini blob tuh hrsnya udah jadi gambarnya gt ngab
 
             const mlResponse = await axios.post(process.env.FRAUD_DETECTION_URL + "/image_predict", {
                 url: image_link,
