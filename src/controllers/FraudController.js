@@ -1,32 +1,51 @@
 import { PrismaClient } from "@prisma/client"
 import crypto from "crypto"
 import axios from "axios"
+import { Storage } from "@google-cloud/storage"
 
 const prisma = new PrismaClient()
 
 class FraudController{
+    base64ToBlob = async (base64, contentType) => {
+        try {
+            contentType = contentType || '';
 
-    base64ToBlob = (base64, contentType) => {
-        contentType = contentType || '';
-        const sliceSize = 1024;
-        const byteCharacters = atob(base64);
-        const byteArrays = [];
+            // Remove data URL prefix if present
+            const base64Data = base64.replace(/^data:image\/\w+;base64,/, '');
 
-        for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-            const slice = byteCharacters.slice(offset, offset + sliceSize);
+            // Decode base64 string into a Buffer
+            const buffer = Buffer.from(base64Data, 'base64');
 
-            const byteNumbers = new Array(slice.length);
-            for (let i = 0; i < slice.length; i++) {
-            byteNumbers[i] = slice.charCodeAt(i);
-            }
-
-            const byteArray = new Uint8Array(byteNumbers);
-            byteArrays.push(byteArray);
+            return buffer;
+        } catch (error) {
+            console.error('Error converting base64 to Blob:', error);
+            throw error; // Re-throw the error for further handling
         }
-
-        const blob = new Blob(byteArrays, {type: contentType});
-        return blob;
     }
+
+    uploadToBucket = async (buffer, fileName) => {
+        try {
+            const storage = new Storage({
+                keyFilename: 'service-account.json',
+                projectId: process.env.GCP_PROJECT_ID,
+            });
+            const bucket = storage.bucket(process.env.GCP_BUCKET_NAME);
+            const folder = "fraud-images/"
+            const file = bucket.file(folder + fileName);
+
+            await file.save(buffer, {
+                metadata: { contentType: 'image/png' },
+            });
+            await file.makePublic();
+            //get the url
+            const data = await file.getMetadata();
+            const link = data[0].mediaLink;
+            return link;          
+        } catch (error) {
+            console.error('Upload failed:', error);
+            throw new Error('File upload to GCP bucket failed'); // Throw a custom error
+        }
+      };
 
     getAllFraud = async (req,res) => {
         try {
@@ -102,16 +121,13 @@ class FraudController{
                 .createHash("sha3-256")
                 .update(current_date + user_id)
                 .digest("hex");
-            const blob = this.base64ToBlob(image_base64, "image/png")
+            const blob = await this.base64ToBlob(image_base64, "image/png")
 
-            // taro sini proses upload ke cloud nya.
-            // ini blob tuh hrsnya udah jadi gambarnya gt ngab
-
+            const image_link = await this.uploadToBucket(blob, fraud_id + ".png")
+            
             const mlResponse = await axios.post(process.env.FRAUD_DETECTION_URL + "/image_predict", {
                 url: image_link,
             })
-
-            console.log(mlResponse.data.prediction)
 
             const fraud = await prisma.frauds.create({
                 data: {
