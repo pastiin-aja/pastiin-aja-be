@@ -9,7 +9,6 @@ This is the backend for the Pastiin Aja mobile App
 ### Fraud Check by Image or Text
 - **Advanced Recognition Technology**: Whether it's a suspicious text message or a dubious image, our app utilizes cutting-edge technology to analyze and detect signs of fraud.
 - **Instant Analysis**: Just upload an image or paste the text directly into the app, and get immediate feedback on potential risks.
-- **User-Friendly Interface**: Designed with simplicity in mind, making it easy for anyone to perform quick fraud checks.
 
 ## Installation
 
